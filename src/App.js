@@ -10,23 +10,24 @@ export default function App() {
             const resposta = await enviarNota({ texto, data: new Date() });
             setMensagem(resposta.mensagem);
             setTexto("");
-        } catch (erro) {
-            setMensagem("Erro ao enviar a nota");
-            console.error(erro);
+        } catch (err) {
+            setMensagem("Erro ao enviar nota");
+            console.error(err);
         }
     };
 
     return (
-        <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+        <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
             <h1>C&F Ceasa</h1>
             <textarea
-                placeholder="Digite sua nota"
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
-                style={{ width: "300px", height: "100px" }}
+                placeholder="Digite sua nota..."
+                rows={5}
+                cols={50}
             />
             <br />
-            <button onClick={handleEnviar} style={{ marginTop: "10px", padding: "5px 10px" }}>
+            <button onClick={handleEnviar} style={{ marginTop: "1rem", padding: "0.5rem 1rem" }}>
                 Enviar Nota
             </button>
             {mensagem && <p>{mensagem}</p>}

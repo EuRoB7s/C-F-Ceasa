@@ -1,4 +1,4 @@
-﻿const API_URL = "/api/notas"; // relativo ao próprio site
+﻿const API_URL = "/api/notas";
 
 export async function enviarNota(nota) {
     const resposta = await fetch(API_URL, {
