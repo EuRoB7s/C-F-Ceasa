@@ -1,106 +1,57 @@
 import React, { useState } from "react";
-import "./App.css";
+import { enviarNota } from "./src/api";
 
-function App() {
-  const [numeroEnvio, setNumeroEnvio] = useState("");
-  const [data, setData] = useState("");
-  const [arquivo, setArquivo] = useState(null);
-
-  const [numeroBusca, setNumeroBusca] = useState("");
+export default function App() {
+  const [texto, setTexto] = useState("");
   const [mensagem, setMensagem] = useState("");
 
-  const backendURL = "http://localhost:3001"; // URL do backend
-
-  const handleUpload = (e) => {
-    if (e.target.files.length > 0) setArquivo(e.target.files[0]);
-  };
-
-  // Enviar nota
-  const enviarNota = async () => {
-    if (!numeroEnvio || !data || !arquivo) {
-      setMensagem("Preencha todos os campos!");
+  const handleEnviar = async () => {
+    if (!texto) {
+      setMensagem("Digite algum texto antes de enviar!");
       return;
     }
-
-    const formData = new FormData();
-    formData.append("numero", numeroEnvio);
-    formData.append("data", data);
-    formData.append("arquivo", arquivo);
 
     try {
-      const res = await fetch(`${backendURL}/upload`, {
-        method: "POST",
-        body: formData,
+      const resposta = await enviarNota({
+        texto,
+        data: new Date().toISOString(),
       });
-      if (res.ok) {
-        setMensagem("Nota enviada com sucesso!");
-        setNumeroEnvio("");
-        setData("");
-        setArquivo(null);
-      } else {
-        setMensagem("Erro ao enviar nota!");
-      }
-    } catch {
-      setMensagem("Erro ao enviar nota!");
+      setMensagem(resposta.mensagem);
+      setTexto(""); // limpa o campo
+    } catch (erro) {
+      console.error("Erro ao enviar nota:", erro);
+      setMensagem("Falha ao enviar a nota.");
     }
   };
 
-// Buscar nota
-const buscarNota = async () => {
-  if (!numeroBusca) {
-    setMensagem("Informe o número da nota.");
-    return;
-  }
-
-  try {
-    const res = await fetch(`http://localhost:3001/nota/${numeroBusca}`);
-    if (!res.ok) {
-      setMensagem("Nota não encontrada.");
-      return;
-    }
-
-    const nota = await res.json(); // captura todo o objeto
-    setMensagem("");
-
-    // Abre o PDF corretamente no backend
-    if (nota.arquivo_url) {
-      window.open(`http://localhost:3001${nota.arquivo_url}`, "_blank");
-    } else {
-      setMensagem("Arquivo da nota não encontrado.");
-    }
-  } catch {
-    setMensagem("Erro ao buscar nota.");
-  }
-};
-
-
   return (
-    <div className="app-container">
-      <h1>C&F Ceasa - Sistema de Notas</h1>
-
-      <h3>Enviar Nota</h3>
-      <input
-        type="text"
-        placeholder="Número da Nota"
-        value={numeroEnvio}
-        onChange={(e) => setNumeroEnvio(e.target.value)}
+    <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
+      <h1>C&F Ceasa - Enviar Notas</h1>
+      <textarea
+        placeholder="Digite sua nota aqui..."
+        value={texto}
+        onChange={(e) => setTexto(e.target.value)}
+        style={{ width: "100%", height: "150px", marginBottom: "1rem" }}
       />
-      <input type="date" value={data} onChange={(e) => setData(e.target.value)} />
-      <input type="file" accept="application/pdf" onChange={handleUpload} />
-      <button onClick={enviarNota}>Enviar Nota</button>
-
-      <h3>Buscar Nota</h3>
-      <input
-        type="text"
-        placeholder="Número da Nota"
-        value={numeroBusca}
-        onChange={(e) => setNumeroBusca(e.target.value)}
-      />
-      <button onClick={buscarNota}>Buscar Nota</button>
-
-      {mensagem && <p className="mensagem">{mensagem}</p>}
+      <button
+        onClick={handleEnviar}
+        style={{
+          padding: "0.5rem 1rem",
+          fontSize: "1rem",
+          cursor: "pointer",
+          backgroundColor: "#4CAF50",
+          color: "#fff",
+          border: "none",
+          borderRadius: "5px",
+        }}
+      >
+        Enviar Nota
+      </button>
+      {mensagem && (
+        <p style={{ marginTop: "1rem", color: "#333", fontWeight: "bold" }}>
+          {mensagem}
+        </p>
+      )}
     </div>
   );
 }
-
-export default App;
