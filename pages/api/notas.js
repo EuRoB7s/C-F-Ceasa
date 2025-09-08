@@ -6,8 +6,7 @@
             return res.status(400).json({ erro: "Texto e data são obrigatórios." });
         }
 
-        console.log("Nota recebida:", { texto, data });
-
+        // Aqui você pode salvar no banco de dados futuramente
         return res.status(200).json({
             mensagem: "Nota recebida com sucesso!",
             nota: { texto, data },

@@ -1,57 +1,35 @@
-import React, { useState } from "react";
-import { enviarNota } from "./src/api";
+﻿import React, { useState } from "react";
+import { enviarNota } from "./api";
 
 export default function App() {
-  const [texto, setTexto] = useState("");
-  const [mensagem, setMensagem] = useState("");
+    const [texto, setTexto] = useState("");
+    const [mensagem, setMensagem] = useState("");
 
-  const handleEnviar = async () => {
-    if (!texto) {
-      setMensagem("Digite algum texto antes de enviar!");
-      return;
-    }
+    const handleEnviar = async () => {
+        try {
+            const resposta = await enviarNota({ texto, data: new Date() });
+            setMensagem(resposta.mensagem);
+            setTexto("");
+        } catch (erro) {
+            setMensagem("Erro ao enviar a nota");
+            console.error(erro);
+        }
+    };
 
-    try {
-      const resposta = await enviarNota({
-        texto,
-        data: new Date().toISOString(),
-      });
-      setMensagem(resposta.mensagem);
-      setTexto(""); // limpa o campo
-    } catch (erro) {
-      console.error("Erro ao enviar nota:", erro);
-      setMensagem("Falha ao enviar a nota.");
-    }
-  };
-
-  return (
-    <div style={{ padding: "2rem", fontFamily: "Arial, sans-serif" }}>
-      <h1>C&F Ceasa - Enviar Notas</h1>
-      <textarea
-        placeholder="Digite sua nota aqui..."
-        value={texto}
-        onChange={(e) => setTexto(e.target.value)}
-        style={{ width: "100%", height: "150px", marginBottom: "1rem" }}
-      />
-      <button
-        onClick={handleEnviar}
-        style={{
-          padding: "0.5rem 1rem",
-          fontSize: "1rem",
-          cursor: "pointer",
-          backgroundColor: "#4CAF50",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px",
-        }}
-      >
-        Enviar Nota
-      </button>
-      {mensagem && (
-        <p style={{ marginTop: "1rem", color: "#333", fontWeight: "bold" }}>
-          {mensagem}
-        </p>
-      )}
-    </div>
-  );
+    return (
+        <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+            <h1>C&F Ceasa</h1>
+            <textarea
+                placeholder="Digite sua nota"
+                value={texto}
+                onChange={(e) => setTexto(e.target.value)}
+                style={{ width: "300px", height: "100px" }}
+            />
+            <br />
+            <button onClick={handleEnviar} style={{ marginTop: "10px", padding: "5px 10px" }}>
+                Enviar Nota
+            </button>
+            {mensagem && <p>{mensagem}</p>}
+        </div>
+    );
 }
