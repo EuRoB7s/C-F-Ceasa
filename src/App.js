@@ -1,30 +1,37 @@
 ﻿import React, { useState } from "react";
-import { enviarNota } from "./api";
+import { enviarNota } from "./src/api";
 
 export default function App() {
     const [texto, setTexto] = useState("");
+    const [mensagem, setMensagem] = useState("");
 
     const handleEnviar = async () => {
         try {
-            const resposta = await enviarNota({ texto, data: new Date() });
-            alert("Nota enviada: " + JSON.stringify(resposta.nota));
+            const data = new Date().toISOString();
+            const resposta = await enviarNota({ texto, data });
+            setMensagem(resposta.mensagem);
             setTexto("");
         } catch (erro) {
-            alert("Erro ao enviar nota: " + erro.message);
+            setMensagem("Erro ao enviar nota!");
+            console.error(erro);
         }
     };
 
     return (
-        <div style={{ padding: "20px", fontFamily: "Arial" }}>
-            <h1>C&F Ceasa - Notas</h1>
-            <input 
-                type="text" 
-                value={texto} 
-                onChange={(e) => setTexto(e.target.value)} 
-                placeholder="Digite a nota" 
-                style={{ width: "300px", marginRight: "10px" }}
-            />
-            <button onClick={handleEnviar}>Enviar</button>
+        <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+            <h1>C&F Ceasa - Enviar Nota</h1>
+            <textarea
+                rows="4"
+                cols="50"
+                value={texto}
+                onChange={(e) => setTexto(e.target.value)}
+                placeholder="Digite sua nota aqui..."
+            ></textarea>
+            <br />
+            <button onClick={handleEnviar} style={{ marginTop: "10px", padding: "10px 20px" }}>
+                Enviar Nota
+            </button>
+            {mensagem && <p style={{ marginTop: "10px" }}>{mensagem}</p>}
         </div>
     );
 }

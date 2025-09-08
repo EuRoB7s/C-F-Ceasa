@@ -7,28 +7,31 @@ export default function App() {
 
     const handleEnviar = async () => {
         try {
-            const resposta = await enviarNota({ texto, data: new Date() });
+            const data = new Date().toISOString();
+            const resposta = await enviarNota({ texto, data });
             setMensagem(resposta.mensagem);
             setTexto("");
         } catch (erro) {
-            console.error("Falha ao enviar:", erro);
-            setMensagem("Erro ao enviar nota");
+            setMensagem("Erro ao enviar nota!");
+            console.error(erro);
         }
     };
 
     return (
-        <div style={{ padding: "20px" }}>
-            <h1>C&F Ceasa - Notas</h1>
+        <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+            <h1>C&F Ceasa - Enviar Nota</h1>
             <textarea
+                rows="4"
+                cols="50"
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
-                placeholder="Digite sua nota..."
-                rows={4}
-                cols={50}
-            />
+                placeholder="Digite sua nota aqui..."
+            ></textarea>
             <br />
-            <button onClick={handleEnviar}>Enviar Nota</button>
-            <p>{mensagem}</p>
+            <button onClick={handleEnviar} style={{ marginTop: "10px", padding: "10px 20px" }}>
+                Enviar Nota
+            </button>
+            {mensagem && <p style={{ marginTop: "10px" }}>{mensagem}</p>}
         </div>
     );
 }
